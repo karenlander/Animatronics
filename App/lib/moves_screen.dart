@@ -2,6 +2,8 @@ import 'package:animatronics/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'edit_move_screen.dart';
+
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -16,6 +18,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FabWidget(),
       backgroundColor: lightPink(),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70.0),
@@ -23,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
           backgroundColor: primaryOrange(),
           elevation: 0,
           flexibleSpace: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
+            padding: const EdgeInsets.only(top: 30.0),
             child: Column(
               children: [
                 newText(27, Colors.white, "My moves", false, true),
@@ -50,7 +53,7 @@ class _MainScreenState extends State<MainScreen> {
                     style: const TextStyle(fontSize: 18),
                   ),
                   trailing: const Icon(
-                    Icons.open_in_full_rounded,
+                    Icons.mode_edit,
                   ),
                   leading:  CircleAvatar(
                     radius: 35,
@@ -60,7 +63,10 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                     backgroundColor: darkPink(),
                   ),
-                  onTap: () {/* Do something else */},
+                  onTap: () {
+                    //TODO: not here
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=> EditMove()));
+                  },
                 ),
               );
             },
@@ -78,4 +84,25 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+
+class FabWidget extends StatefulWidget {
+  const FabWidget({Key? key}) : super(key: key);
+
+  @override
+  _FabWidgetState createState() => _FabWidgetState();
+}
+
+class _FabWidgetState extends State<FabWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+        child: Icon(Icons.play_arrow),
+        backgroundColor: primaryOrange(),
+        onPressed: (){
+
+        }
+    );
+  }
+}
+
 
