@@ -65,13 +65,22 @@ class _LineChartSample2State extends State<LineChartSample2> {
     Widget text;
     switch (value.toInt()) {
       case 2:
-        text = const Text('MAR', style: style);
+        text = const Text('10', style: style);
         break;
-      case 5:
-        text = const Text('JUN', style: style);
+      case 4:
+        text = const Text('20', style: style);
+        break;
+      case 6:
+        text = const Text('30', style: style);
         break;
       case 8:
-        text = const Text('SEP', style: style);
+        text = const Text('40', style: style);
+        break;
+      case 10:
+        text = const Text('50', style: style);
+        break;
+      case 12:
+        text = const Text('60', style: style);
         break;
       default:
         text = const Text('', style: style);
@@ -90,13 +99,19 @@ class _LineChartSample2State extends State<LineChartSample2> {
     String text;
     switch (value.toInt()) {
       case 1:
-        text = '10K';
+        text = '30°';
+        break;
+      case 2:
+        text = '60°';
         break;
       case 3:
-        text = '30k';
+        text = '90°';
+        break;
+      case 4:
+        text = '120°';
         break;
       case 5:
-        text = '50k';
+        text = '150°';
         break;
       default:
         return Container();

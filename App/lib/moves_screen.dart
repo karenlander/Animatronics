@@ -26,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
           backgroundColor: primaryOrange(),
           elevation: 0,
           flexibleSpace: Padding(
-            padding: const EdgeInsets.only(top: 30.0),
+            padding: const EdgeInsets.only(top: 20.0),
             child: Column(
               children: [
                 newText(27, Colors.white, "My moves", false, true),
@@ -52,20 +52,25 @@ class _MainScreenState extends State<MainScreen> {
                     movesName,
                     style: const TextStyle(fontSize: 18),
                   ),
-                  trailing: const Icon(
-                    Icons.mode_edit,
+                  trailing: IconButton(
+                    icon: const Icon(
+                      Icons.mode_edit,
+                    ),
+                    onPressed: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> EditMove()));
+                    },
                   ),
                   leading:  CircleAvatar(
                     radius: 35,
-                    child: Icon(
-                      Icons.visibility_rounded,
-                      color: lightPink()
-                    ),
+                    child:
+                     Icon(
+                       //TODO: s1,s2, s3
+                        Icons.visibility_rounded,
+                        color: lightPink()
+                      ),
                     backgroundColor: darkPink(),
                   ),
                   onTap: () {
-                    //TODO: not here
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=> EditMove()));
                   },
                 ),
               );
