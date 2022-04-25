@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'edit_move_screen.dart';
+import 'file.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -12,8 +13,11 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  int numOfMoves = 0;
+
+  //TODO: make as many moves as in storage
   final List<String> _moves =
-  List.generate(100, (index) => "Move ${index.toString()}");
+  List.generate(100, (index) => "Move ${(index+1).toString()}");
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +29,10 @@ class _MainScreenState extends State<MainScreen> {
         child: AppBar(
           backgroundColor: primaryOrange(),
           elevation: 0,
+          actions: [
+            // widget.isMyProfile? Container(): newIcon(Icons.account_circle_outlined, 30, myProfile, Colors.white),
+            newIcon(Icons.refresh, 30, refresh, Colors.white),
+          ],
           flexibleSpace: Padding(
             padding: const EdgeInsets.only(top: 20.0),
             child: Column(
@@ -38,6 +46,8 @@ class _MainScreenState extends State<MainScreen> {
       body: Padding(
         padding: const EdgeInsets.only(top:20.0),
         child: ReorderableListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
             itemCount: _moves.length,
             itemBuilder: (context, index) {
               final String movesName = _moves[index];
@@ -56,7 +66,8 @@ class _MainScreenState extends State<MainScreen> {
                     icon: const Icon(
                       Icons.mode_edit,
                     ),
-                    onPressed: (){
+                    onPressed: () async {
+                      writeFile(  await readFile ());
                       Navigator.of(context).push(MaterialPageRoute(builder: (context)=> EditMove()));
                     },
                   ),
@@ -64,7 +75,7 @@ class _MainScreenState extends State<MainScreen> {
                     radius: 35,
                     child:
                      Icon(
-                       //TODO: s1,s2, s3
+                       //TODO: image?
                         Icons.visibility_rounded,
                         color: lightPink()
                       ),
@@ -110,4 +121,7 @@ class _FabWidgetState extends State<FabWidget> {
   }
 }
 
+void refresh(){
+
+}
 
