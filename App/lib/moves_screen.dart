@@ -14,10 +14,16 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int numOfMoves = 0;
+  late List<String> _moves;
 
-  //TODO: make as many moves as in storage
-  final List<String> _moves =
-  List.generate(100, (index) => "Move ${(index+1).toString()}");
+  void initState() {
+    super.initState();
+    for(int i=1; i<=15; i++){
+      numOfMoves++;
+    }
+    //TODO: make as many moves as in storage
+    _moves = List.generate(100, (index) => "Move ${(index+1).toString()}");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +36,9 @@ class _MainScreenState extends State<MainScreen> {
           backgroundColor: primaryOrange(),
           elevation: 0,
           actions: [
-            // widget.isMyProfile? Container(): newIcon(Icons.account_circle_outlined, 30, myProfile, Colors.white),
             newIcon(Icons.refresh, 30, refresh, Colors.white),
+            //newIcon(Icons.refresh, 30, refresh, Colors.white),
+           // newIcon(Icons.refresh, 30, refresh, Colors.white),
           ],
           flexibleSpace: Padding(
             padding: const EdgeInsets.only(top: 20.0),
@@ -67,7 +74,7 @@ class _MainScreenState extends State<MainScreen> {
                       Icons.mode_edit,
                     ),
                     onPressed: () async {
-                      writeFile(  await readFile ());
+                      writeFile("test2/file",await readFile ("test/file/data"));
                       Navigator.of(context).push(MaterialPageRoute(builder: (context)=> EditMove()));
                     },
                   ),
