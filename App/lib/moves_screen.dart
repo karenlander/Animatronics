@@ -1,4 +1,3 @@
-import 'package:animatronics/new_move.dart';
 import 'package:animatronics/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +126,8 @@ class _MainScreenState extends State<MainScreen> {
           backgroundColor: primaryOrange(),
           elevation: 0,
           actions: [
-            newIcon(Icons.add_circle, 30, addMove, Colors.white),
+            newIcon(Icons.play_arrow, 30, play, Colors.white),
+            newIcon(Icons.stop, 30, stop, Colors.white),
           ],
           flexibleSpace: Padding(
             padding: const EdgeInsets.only(top: 40.0),
@@ -140,15 +140,6 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
       body: main,
-    );
-  }
-
-  void addMove() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return newMoveWindow();
-      },
     );
   }
 }
@@ -170,6 +161,12 @@ class _FabWidgetState extends State<FabWidget> {
   }
 }
 
+void play() {
 
+}
+
+void stop() {
+
+}
 
 
