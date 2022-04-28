@@ -28,6 +28,8 @@ void writeFile(String path, String data) async {
 }
 
 void deleteMoveFromDb(int index) async{
+  //TODO: check if works && numOfMoves--
+  //TODO: Add array of number not count
   FirebaseDatabase database = FirebaseDatabase.instance;
   String path = 'glove/move' + (index+1).toString() + '/data';
   await database.ref().child(path).remove();
