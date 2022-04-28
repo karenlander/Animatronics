@@ -1,9 +1,9 @@
+import 'package:animatronics/new_move.dart';
 import 'package:animatronics/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'edit_move_screen.dart';
-import 'file.dart';
+import 'firebase.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -13,45 +13,38 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  bool loadingFirebase = true;
   int numOfMoves = 0;
   late List<String> _moves;
 
   void initState() {
     super.initState();
-    for(int i=1; i<=15; i++){
-      numOfMoves++;
-    }
-    //TODO: make as many moves as in storage
-    _moves = List.generate(100, (index) => "Move ${(index+1).toString()}");
+    loadMoves();
+  }
+
+  void loadMoves() async {
+    setState(() {
+      loadingFirebase = true;
+    });
+    numOfMoves = await getNumOfMoves();
+    _moves =
+        List.generate(numOfMoves, (index) => "Move ${(index + 1).toString()}");
+    setState(() {
+      loadingFirebase = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FabWidget(),
-      backgroundColor: lightPink(),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70.0),
-        child: AppBar(
-          backgroundColor: primaryOrange(),
-          elevation: 0,
-          actions: [
-            newIcon(Icons.refresh, 30, refresh, Colors.white),
-            //newIcon(Icons.refresh, 30, refresh, Colors.white),
-           // newIcon(Icons.refresh, 30, refresh, Colors.white),
-          ],
-          flexibleSpace: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: Column(
-              children: [
-                newText(27, Colors.white, "My moves", false, true),
-              ],
-            ),
-          ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.only(top:20.0),
+    Widget main;
+    if (loadingFirebase) {
+      loadingFirebase = false;
+      main = Center(
+        child: CircularProgressIndicator(color: darkOrange()),
+      );
+    } else {
+      main = Padding(
+        padding: const EdgeInsets.only(top: 20.0),
         child: ReorderableListView.builder(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
@@ -63,33 +56,53 @@ class _MainScreenState extends State<MainScreen> {
                 color: primaryPink(),
                 elevation: 1,
                 margin: const EdgeInsets.all(10),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(25),
-                  title: Text(
-                    movesName,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(
-                      Icons.mode_edit,
-                    ),
-                    onPressed: () async {
-                      writeFile("test2/file",await readFile ("test/file/data"));
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> EditMove()));
-                    },
-                  ),
-                  leading:  CircleAvatar(
-                    radius: 35,
-                    child:
-                     Icon(
-                       //TODO: image?
-                        Icons.visibility_rounded,
-                        color: lightPink()
+                child: Dismissible(
+                  direction: DismissDirection.endToStart,
+                  key: ValueKey(movesName),
+                  background: Container(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.white,
                       ),
-                    backgroundColor: darkPink(),
+                    ),
+                    color: darkOrange(),
                   ),
-                  onTap: () {
+                  onDismissed: (DismissDirection direction) {
+                    setState(() {
+                      _moves.removeAt(index);
+                    });
+                    deleteMoveFromDb(index);
                   },
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(25),
+                    title: Text(
+                      movesName,
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(
+                        Icons.mode_edit,
+                      ),
+                      onPressed: () async {
+                        //writeFile("glove/move1",await readFile ("test/file/data"));
+                        //writeFile("glove/move2",await readFile ("test/file/data"));
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => EditMove()));
+                      },
+                    ),
+                    leading: CircleAvatar(
+                      radius: 35,
+                      child: Icon(
+                          //TODO: image?
+                          Icons.visibility_rounded,
+                          color: lightPink()),
+                      backgroundColor: darkPink(),
+                    ),
+                    onTap: () {},
+                  ),
                 ),
               );
             },
@@ -103,7 +116,39 @@ class _MainScreenState extends State<MainScreen> {
                 _moves.insert(newIndex, element);
               });
             }),
+      );
+    }
+    return Scaffold(
+      floatingActionButton: FabWidget(),
+      backgroundColor: lightPink(),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70.0),
+        child: AppBar(
+          backgroundColor: primaryOrange(),
+          elevation: 0,
+          actions: [
+            newIcon(Icons.add_circle, 30, addMove, Colors.white),
+          ],
+          flexibleSpace: Padding(
+            padding: const EdgeInsets.only(top: 40.0),
+            child: Column(
+              children: [
+                newText(27, Colors.white, "My moves", false, true),
+              ],
+            ),
+          ),
+        ),
       ),
+      body: main,
+    );
+  }
+
+  void addMove() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return newMoveWindow();
+      },
     );
   }
 }
@@ -119,16 +164,12 @@ class _FabWidgetState extends State<FabWidget> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-        child: Icon(Icons.play_arrow),
+        child: Icon(Icons.send),
         backgroundColor: primaryOrange(),
-        onPressed: (){
-
-        }
-    );
+        onPressed: () {});
   }
 }
 
-void refresh(){
 
-}
+
 

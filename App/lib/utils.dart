@@ -98,3 +98,13 @@ Widget animatronicsTittle(String text, Color c, double fontSize){
         fontFamily: "Pacifico"),
   );
 }
+
+Widget newTextButton (String text, onPressedFunction){
+  return TextButton(
+    style: TextButton.styleFrom(
+      primary: Color(0xff6200EE),
+    ),
+    onPressed: onPressedFunction,
+    child: Text(text),
+  );
+}

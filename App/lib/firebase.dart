@@ -27,16 +27,23 @@ void writeFile(String path, String data) async {
   ref.set( {"data": file});
 }
 
-Future<bool> existFile(int moveNumber) async{
-  //TODO: change
-  try{
-    String fileName = "Move" + moveNumber.toString();
-    FirebaseStorage storage = FirebaseStorage.instance;
-    Reference ref = storage.ref().child(fileName);
-    var data = await ref.getData();
-    return true;
-  }catch(e){
-    return false;
-  }
+void deleteMoveFromDb(int index) async{
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  String path = 'glove/move' + (index+1).toString() + '/data';
+  await database.ref().child(path).remove();
 }
+
+Future<int> getNumOfMoves() async{
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference ref = database.ref().child('numOfMoves/numOfMoves');
+  DataSnapshot data = await ref.get();
+  return data.value as int;
+}
+
+void setNumOfMoves(int numOfMoves) async{
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference ref = database.ref().child('numOfMoves');
+  ref.set( {"numOfMoves": numOfMoves});
+}
+
 

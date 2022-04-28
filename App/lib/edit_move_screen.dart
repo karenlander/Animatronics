@@ -22,7 +22,7 @@ class _EditMoveState extends State<EditMove> {
             backgroundColor: primaryOrange(),
             elevation: 0,
             flexibleSpace: Padding(
-              padding: const EdgeInsets.only(top: 20.0),
+              padding: const EdgeInsets.only(top: 40.0),
               child: Column(
                 children: [
                   newText(27, Colors.white, "Edit Move", false, true),
