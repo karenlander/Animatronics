@@ -1,3 +1,4 @@
+import 'package:animatronics/firebase.dart';
 import 'package:animatronics/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +57,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin{
   }
 
   void start(){
+    //setNumOfMoves(2);
     Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MainScreen()));
   }
 }

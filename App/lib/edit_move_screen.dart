@@ -2,7 +2,7 @@ import 'package:animatronics/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'line_chart_sample2.dart';
+import 'external/line_chart_sample2.dart';
 
 class EditMove extends StatefulWidget {
   const EditMove({Key? key}) : super(key: key);

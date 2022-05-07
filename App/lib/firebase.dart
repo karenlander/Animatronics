@@ -27,14 +27,6 @@ void writeFile(String path, String data) async {
   ref.set( {"data": file});
 }
 
-void deleteMoveFromDb(int index) async{
-  //TODO: check if works && numOfMoves--
-  //TODO: Add array of number not count
-  FirebaseDatabase database = FirebaseDatabase.instance;
-  String path = 'glove/move' + (index+1).toString() + '/data';
-  await database.ref().child(path).remove();
-}
-
 Future<int> getNumOfMoves() async{
   FirebaseDatabase database = FirebaseDatabase.instance;
   DatabaseReference ref = database.ref().child('numOfMoves/numOfMoves');
