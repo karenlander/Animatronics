@@ -57,7 +57,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin{
   }
 
   void start(){
-    //setNumOfMoves(2);
+   //setNumOfMoves(0);
     Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MainScreen()));
   }
 }
