@@ -89,7 +89,7 @@ class _MainScreenState extends State<MainScreen> {
                           //writeFile("glove/move1",await readFile ("test/file/data"));
                           //writeFile("glove/move2",await readFile ("test/file/data"));
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => EditMove()));
+                              builder: (context) => EditMove(moveNumber: index + 1)));
                         },
                       ),
                       leading: CircleAvatar(

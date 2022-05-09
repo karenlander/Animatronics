@@ -47,6 +47,7 @@ android {
         applicationId "com.technion.iot.animatronics"
         minSdkVersion 19
         targetSdkVersion 30
+        multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -67,4 +68,5 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation platform('com.google.firebase:firebase-bom:29.2.1')
+    implementation 'com.android.support:multidex:2.0.1'
 }

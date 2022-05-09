@@ -44,6 +44,7 @@ dependencies:
   flutter_reorderable_list: ^1.2.0
   fl_chart: ^0.50.1
   firebase_database: ^9.0.12
+  audioplayers:
 
 dev_dependencies:
   flutter_test:
