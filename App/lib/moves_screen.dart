@@ -62,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
               numOfMoves, (index) => "Move ${(index + 1).toString()}");
       main = Column(
         children: [
-          countdown(),
+          countdown(_stopWatchTimer, Alignment.centerRight),
           Expanded(
             child: ReorderableListView.builder(
                 scrollDirection: Axis.vertical,
@@ -144,13 +144,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void playAndStop() async {
-    final isRecording = await recorder.toggleRecording(numOfMoves + 1);
+    final isRecording = await recorder.toggleRecording(numOfMoves + 1, false);
     setState(() {});
     if(recorder.isRecording){
       _stopWatchTimer.onExecute.add(StopWatchExecute.start);
     }
-    //TODO: reset de stopwatch?
-    //_stopWatchTimer.onExecute.add(StopWatchExecute.reset);
   }
 
   void refresh() {
@@ -160,25 +158,7 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  Widget countdown() {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: TextButton(
-        style: TextButton.styleFrom(
-          primary: darkOrange(),
-        ),
-      onPressed: () {},
-      child: StreamBuilder<int>(
-      stream: _stopWatchTimer.rawTime,
-      initialData: 0,
-      builder: (context, snapshot) {
-        final value = snapshot.data;
-        final displayTime = StopWatchTimer.getDisplayTime(value!);
-        return Text(displayTime);
-      }
-      )),
-    );
-  }
+
 }
 
 class FabWidget extends StatefulWidget {

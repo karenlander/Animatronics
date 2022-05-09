@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 Color primaryOrange(){
   return Color(0xffff7043);
@@ -106,5 +107,48 @@ Widget newTextButton (String text, onPressedFunction){
     ),
     onPressed: onPressedFunction,
     child: Text(text),
+  );
+}
+
+Widget greyText(String text){
+  return Align(
+    alignment: Alignment.centerLeft,
+    child: Text(
+      text,
+      style: TextStyle(
+          color: Colors.grey, fontFamily: 'Poppins', fontSize: 16),
+    ),
+  );
+}
+
+Widget textAndIcon(icon,onPressedFunction,text){
+  return  Row(
+    children: [
+      newIcon(icon, 30, onPressedFunction, primaryPink()),
+      greyText(text)
+    ],
+  );
+}
+
+Widget countdown(_stopWatchTimer, alignment) {
+  return Align(
+    alignment: alignment,
+    child: TextButton(
+        style: TextButton.styleFrom(
+          primary: darkOrange(),
+        ),
+        onPressed: () {},
+        child: StreamBuilder<int>(
+            stream: _stopWatchTimer.rawTime,
+            initialData: 0,
+            builder: (context, snapshot) {
+              final value = snapshot.data;
+              final displayTime = StopWatchTimer.getDisplayTime(value!);
+              return Text(displayTime,
+                style: TextStyle(
+                    color: darkOrange(), fontFamily: 'Poppins', fontSize: 15),
+              );
+            }
+        )),
   );
 }

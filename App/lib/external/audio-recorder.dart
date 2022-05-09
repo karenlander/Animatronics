@@ -44,7 +44,7 @@ class SoundRecorder{
     await _audioRecorder!.startRecorder(toFile: 'audio.aac');
   }
 
-  Future _stop(int nextMove) async {
+  Future _stop(int nextMove, bool updating) async {
     if(!isRecorderInitialized){
       return;
     }
@@ -55,14 +55,16 @@ class SoundRecorder{
     Reference ref = storage.ref().child(Filename);
     final File file = File(url!);
     await ref.putFile(File(file.path));
-    setNumOfMoves(nextMove);
+    if(!updating){
+      setNumOfMoves(nextMove);
+    }
   }
 
-  Future toggleRecording(int nextMove) async{
+  Future toggleRecording(int nextMove, bool updating) async{
     if(_audioRecorder!.isStopped){
       await _record();
     }else{
-      await _stop(nextMove);
+      await _stop(nextMove, updating);
     }
   }
 }
