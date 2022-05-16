@@ -40,7 +40,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin{
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 const SizedBox(height: 20),
-                Lottie.asset('lib/doll.json',),
+                Lottie.asset('lib/assets/doll.json',),
                 animatronicsTittle('Animatronics', primaryOrange(), 59),
                 const SizedBox(height: 140),
                 newButton("Start", start),

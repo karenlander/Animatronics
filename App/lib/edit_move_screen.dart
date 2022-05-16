@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'edit-audio.dart';
 import 'edit-sensor.dart';
+import 'firebase.dart';
 
 class EditMove extends StatefulWidget {
   int moveNumber;
@@ -13,8 +14,32 @@ class EditMove extends StatefulWidget {
 }
 
 class _EditMoveState extends State<EditMove> {
+  bool loadingFirebase = true;
+  late List<List<String>> sensorsData;
+
+  void initState() {
+    super.initState();
+    parseFileOfMove();
+  }
+
+  void parseFileOfMove() async {
+    String path = "glove/move" + widget.moveNumber.toString() + "/data";
+    sensorsData = await readFile (path);
+    setState(() {
+      loadingFirebase = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    Widget main;
+    if (loadingFirebase) {
+      main = Center(
+        child: CircularProgressIndicator(color: darkOrange()),
+      );
+    } else {
+      main = getTabs(context, widget.moveNumber);
+    }
     return Scaffold(
         backgroundColor: lightPink(),
         appBar: PreferredSize(
@@ -23,7 +48,7 @@ class _EditMoveState extends State<EditMove> {
             backgroundColor: primaryOrange(),
             elevation: 0,
             flexibleSpace: Padding(
-              padding: const EdgeInsets.only(top: 40.0),
+              padding: const EdgeInsets.only(top: 30.0),
               child: Column(
                 children: [
                   newText(27, Colors.white, "Edit Move", false, true),
@@ -32,55 +57,56 @@ class _EditMoveState extends State<EditMove> {
             ),
           ),
         ),
-        body: getTabs(context, widget.moveNumber));
+        body: main
+    );
   }
-}
 
-DefaultTabController getTabs(context, int moveNumber) {
-  return DefaultTabController(
-    length: 4,
-    child: Scaffold(
-      backgroundColor: lightPink(),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
+  DefaultTabController getTabs(context, int moveNumber) {
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
         backgroundColor: lightPink(),
-        toolbarHeight: 5,
-        bottom: TabBar(
-          labelStyle: TextStyle(fontWeight: FontWeight.w500),
-          labelColor: primaryOrange(),
-          unselectedLabelColor: darkPink(),
-          indicatorPadding: const EdgeInsets.all(5),
-          indicator: BoxDecoration(
-            border: Border.all(color: lightPink(), width: 3),
-            borderRadius: BorderRadius.circular(10),
-            color: lightPink(),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: lightPink(),
+          toolbarHeight: 5,
+          bottom: TabBar(
+            labelStyle: TextStyle(fontWeight: FontWeight.w500),
+            labelColor: primaryOrange(),
+            unselectedLabelColor: darkPink(),
+            indicatorPadding: const EdgeInsets.all(5),
+            indicator: BoxDecoration(
+              border: Border.all(color: lightPink(), width: 3),
+              borderRadius: BorderRadius.circular(10),
+              color: lightPink(),
+            ),
+            tabs: [
+              tabCreatorFromAssets("lib/assets/head.png", "HEAD"),
+              tabCreatorFromAssets("lib/assets/mouth.png", "MOUTH"),
+              tabCreatorFromAssets("lib/assets/body.png", "BODY"),
+              tabCreator(Icons.music_note_rounded, "AUDIO")
+            ],
           ),
-          tabs: [
-            tabCreatorFromAssets("lib/head.png", "HEAD"),
-            tabCreatorFromAssets("lib/mouth.png", "MOUTH"),
-            tabCreatorFromAssets("lib/body.png", "BODY"),
-            tabCreator(Icons.music_note_rounded, "AUDIO")
+        ),
+        body: TabBarView(
+          children: [
+            EditSensor(sensorData: sensorsData[0]),
+            EditSensor(sensorData: sensorsData[1]),
+            EditSensor(sensorData: sensorsData[2]),
+            EditAudio(moveNumber: moveNumber),
           ],
         ),
       ),
-      body: TabBarView(
-        children: [
-          EditSensor(),
-          EditSensor(),
-          EditSensor(),
-          EditAudio(moveNumber: moveNumber),
-        ],
-      ),
-    ),
-  );
-}
+    );
+  }
 
-Tab tabCreator(IconData icon, String text) {
-  return Tab(icon: Icon(icon, size: 30), text: text);
-}
+  Tab tabCreator(IconData icon, String text) {
+    return Tab(icon: Icon(icon, size: 30), text: text);
+  }
 
-Tab tabCreatorFromAssets(String image, String text) {
-  return Tab(icon: ImageIcon(AssetImage(image), size: 30), text: text);
+  Tab tabCreatorFromAssets(String image, String text) {
+    return Tab(icon: ImageIcon(AssetImage(image), size: 30), text: text);
+  }
 }
 
 

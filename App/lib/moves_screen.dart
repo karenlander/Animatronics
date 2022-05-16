@@ -1,3 +1,4 @@
+
 import 'package:animatronics/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'edit_move_screen.dart';
 import 'external/audio-recorder.dart';
 import 'firebase.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:http/http.dart' as http;
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -40,6 +42,9 @@ class _MainScreenState extends State<MainScreen> {
       loadingFirebase = true;
     });
     numOfMoves = await getNumOfMoves();
+    _moves =
+        List.generate(
+            numOfMoves, (index) => "Move ${(index + 1).toString()}");
     setState(() {
       loadingFirebase = false;
     });
@@ -57,9 +62,9 @@ class _MainScreenState extends State<MainScreen> {
         child: CircularProgressIndicator(color: darkOrange()),
       );
     } else {
-      _moves =
-          List.generate(
-              numOfMoves, (index) => "Move ${(index + 1).toString()}");
+      if(numOfMoves != _moves.length){
+        _moves.add("Move ${(numOfMoves).toString()}");
+      }
       main = Column(
         children: [
           countdown(_stopWatchTimer, Alignment.centerRight),
@@ -86,10 +91,9 @@ class _MainScreenState extends State<MainScreen> {
                           Icons.mode_edit,
                         ),
                         onPressed: () async {
-                          //writeFile("glove/move1",await readFile ("test/file/data"));
-                          //writeFile("glove/move2",await readFile ("test/file/data"));
+                          int parseMoveNumber = int.parse(_moves[index].split(' ')[1]);
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => EditMove(moveNumber: index + 1)));
+                              builder: (context) => EditMove(moveNumber: parseMoveNumber)));
                         },
                       ),
                       leading: CircleAvatar(
@@ -130,7 +134,7 @@ class _MainScreenState extends State<MainScreen> {
             newIcon(icon, 30, playAndStop, Colors.white),
           ],
           flexibleSpace: Padding(
-            padding: const EdgeInsets.only(top: 40.0),
+            padding: const EdgeInsets.only(top: 30.0),
             child: Column(
               children: [
                 newText(27, Colors.white, "My moves", false, true),
@@ -147,9 +151,21 @@ class _MainScreenState extends State<MainScreen> {
     final isRecording = await recorder.toggleRecording(numOfMoves + 1, false);
     setState(() {});
     if(recorder.isRecording){
+      //we pressed play
       _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+      getRequest("/start/");
+    }else{
+      //we pressed stop
+      getRequest("/stop/");
     }
   }
+
+  Future<void> getRequest(String function) async {
+    String stringUrl = "http://192.168.0.107" + function;
+    Uri url = Uri.parse(stringUrl);
+    await http.get(url);
+  }
+
 
   void refresh() {
     _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
