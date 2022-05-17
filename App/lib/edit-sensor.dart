@@ -1,10 +1,16 @@
+import 'package:animatronics/utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/material.dart';
 import 'external/line_chart.dart';
+import 'firebase.dart';
 
 class EditSensor extends StatefulWidget {
   List<String> sensorData;
-  EditSensor({Key? key, required this.sensorData}) : super(key: key);
+  int sensorNumber;
+  int moveNumber;
+  EditSensor({Key? key, required this.sensorData, required this.sensorNumber,
+  required this.moveNumber}) : super(key: key);
 
   @override
   _EditSensorState createState() => _EditSensorState();
@@ -13,17 +19,16 @@ class EditSensor extends StatefulWidget {
 class _EditSensorState extends State<EditSensor> {
   double anglePressed = 0;
   int angleIndexPressed = 0;
-  late List<Data> data ;
+  List<Data> data = [];
 
   @override
   void initState(){
-    data = [
-      Data(0, 35),
-      Data(1, 37),
-      Data(2, 39),
-      Data(4, 42),
-      Data(13, 40),
-    ];
+    double time = 0;
+    for(int i= 0 ; i< widget.sensorData.length ; i ++){
+      data.add(Data(time, double.parse(widget.sensorData[i])));
+      //TODO: are we sure?
+      time += 0.05;
+    }
   }
 
   @override
@@ -32,30 +37,67 @@ class _EditSensorState extends State<EditSensor> {
       padding: const EdgeInsets.only(top: 20),
       child: Column(
         children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: LineGraph(data: data, updateSelectedAngle: updateSelectedAngle),
-
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: LineGraph(data: data, updateSelectedAngle: updateSelectedAngle),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: SpinBox(
+              //TODO: change to angles limits
+              min: -100,
+              max: 100,
+              value: anglePressed,
+              onChanged: (value) {
+                double time = data[angleIndexPressed].second;
+                data[angleIndexPressed] = Data(time, value);
+                setState(() {
+                });
+              } ,
             ),
           ),
-          SpinBox(
-            //TODO: change to angles limits
-            min: 1,
-            max: 100,
-            value: anglePressed,
-            onChanged: (value) {
-              double time = data[angleIndexPressed].second;
-              data[angleIndexPressed] = Data(time, value);
-              setState(() {
-
-              });
-            } ,
+          Padding(
+            padding: const EdgeInsets.only(top: 110.0),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                icon: Icon(Icons.save,
+                  color: darkPink(),
+                ),
+                iconSize: 40,
+                onPressed: () async {
+                  await updateFileInFirebase();
+                },
+              ),
+            ),
           )
         ],
       ),
     );
   }
+
+  Future<void> updateFileInFirebase() async{
+    String path = "glove/move" + widget.moveNumber.toString() + "/data";
+    String content = await readFileWithoutParse(path);
+    String modifyContent = "";
+    var parts = content.split(' ');
+    parts.removeLast();
+
+    //TODO: change to 3
+    int row = 2;
+    //TODO: change to 3
+    int col = (parts.length / 2).round() ;
+    var matrix = List.generate(row, (i) => List.filled(col, "", growable: false), growable: false);
+    //TODO: change to 3
+    for(int i = 0 ; i< parts.length; i+=2){
+      matrix[i][0] = parts[i];
+      matrix[i+1][1] = parts[i+1];
+      //TODO: uncomment
+     // matrix[i+2][2] = parts[i+2];
+
+    }
+  }
+
 
   void updateSelectedAngle(double angle, int index){
     anglePressed = angle;

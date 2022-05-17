@@ -23,14 +23,18 @@ List<List<String>> parseData(String content){
   List<String> s3Data =  <String> [];
   List<List<String>> sensorsData = [];
   var parts = content.split(' ');
+  parts.removeLast();
+  int sensor = 0 ;
   for(int i= 0; i< parts.length ; i++){
-    if(parts[i] == "S1"){
-      s1Data.add(cutEnter(parts[i-1]));
-    }else if (parts[i] == "S2"){
-      s2Data.add(parts[i-1]);
-    }else if (parts[i] == "S3"){
-      s3Data.add(parts[i-1]);
-    }
+      if(sensor == 0){
+        s1Data.add(cutEnter(parts[i]));
+      }else if(sensor == 1){
+        s2Data.add(parts[i]);
+      }else{
+        s3Data.add(parts[i]);
+      }
+      //TODO; change for sensor 3
+      sensor = (sensor + 1) % 2;
   }
   sensorsData.add(s1Data);
   sensorsData.add(s2Data);
@@ -55,6 +59,19 @@ void writeFile(String path, String data) async {
   var base64Str = base64.encode(bytes);
   String file = "File,base64," + base64Str  ;
   ref.set( {"data": file});
+}
+
+Future<String> readFileWithoutParse(String path) async {
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference ref = database.ref().child(path);
+  DataSnapshot data = await ref.get();
+  String fileWithHeader = data.value as String;
+  String fileContent = fileWithHeader.split(',').last;
+  // if (fileContent.length % 4 > 0) {
+  //   fileContent += '=' * (4 - fileContent.length % 4) ;// as suggested by Albert221
+  // }
+
+  return utf8.decode(base64.decode(fileContent));
 }
 
 Future<int> getNumOfMoves() async{

@@ -90,9 +90,9 @@ class _EditMoveState extends State<EditMove> {
         ),
         body: TabBarView(
           children: [
-            EditSensor(sensorData: sensorsData[0]),
-            EditSensor(sensorData: sensorsData[1]),
-            EditSensor(sensorData: sensorsData[2]),
+            EditSensor(sensorData: sensorsData[0], sensorNumber: 1, moveNumber: widget.moveNumber,),
+            EditSensor(sensorData: sensorsData[1], sensorNumber: 2, moveNumber: widget.moveNumber),
+            EditSensor(sensorData: sensorsData[2], sensorNumber: 3, moveNumber: widget.moveNumber),
             EditAudio(moveNumber: moveNumber),
           ],
         ),

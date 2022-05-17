@@ -53,7 +53,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     bool isRecording = recorder.isRecording;
-    final icon = isRecording ? Icons.stop : Icons.play_arrow;
+    final icon = isRecording ? Icons.radio_button_checked : Icons.radio_button_unchecked;
 
     Widget main;
     if (loadingFirebase) {
@@ -151,9 +151,9 @@ class _MainScreenState extends State<MainScreen> {
     final isRecording = await recorder.toggleRecording(numOfMoves + 1, false);
     setState(() {});
     if(recorder.isRecording){
-      //we pressed play
+      //we pressed record
       _stopWatchTimer.onExecute.add(StopWatchExecute.start);
-      getRequest("/start/");
+      getRequest("/record/");
     }else{
       //we pressed stop
       getRequest("/stop/");
@@ -161,7 +161,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> getRequest(String function) async {
-    String stringUrl = "http://192.168.0.107" + function;
+    //TODO: change ip
+    String stringUrl = "http://192.168.43.115" + function;
     Uri url = Uri.parse(stringUrl);
     await http.get(url);
   }
