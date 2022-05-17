@@ -30,7 +30,7 @@ void setup(void){
 
 
 
-  server.on("/play/", HTTP_GET, playFunction);
+  server.on("/play/", HTTP_GET, recordFunction);
   server.on("/stop/", HTTP_GET, stopFunction); 
   server.begin();                           // Actually start the server
   Serial.println("HTTP server started");
@@ -41,9 +41,9 @@ void loop(void){
   server.handleClient();                    // Listen for HTTP requests from clients
 }
 
-void playFunction(){
-  Serial.println("Entering play");
-  server.send(200, "text/html", "play received");
+void recordFunction(){
+  Serial.println("Entering record");
+  server.send(200, "text/html", "record received");
 }
 
 void stopFunction(){
