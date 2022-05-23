@@ -207,6 +207,7 @@ void rtdbUploadCallback(RTDB_UploadStatusInfo info)
 void setup() {
   
   Serial.begin(9600);
+  Serial.print("\n\n\n");
   connectToWifi();
   connectToFireBase();
   
