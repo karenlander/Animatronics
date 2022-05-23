@@ -245,7 +245,7 @@ void sendFile(){
     if(!numOfMoves){
        Serial.printf("Failed getting numOfMoves from FireBase: %s",fbdo.errorReason().c_str());
     }   
-    Serial.printf("Set %s... %s\n",movesPath, Firebase.setInt(fbdo, F(numOfMovesPath), ++numOfMoves) ? "ok" : fbdo.errorReason().c_str());
+    Serial.printf("Set %s... %s\n",numOfMovesPath, Firebase.setInt(fbdo, F(numOfMovesPath), ++numOfMoves) ? "ok" : fbdo.errorReason().c_str());
     sprintf(filePath, "%s%d%s", filePath1,numOfMoves,filePath2);
     Serial.printf("filePath = %s",filePath);
     
