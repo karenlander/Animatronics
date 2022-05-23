@@ -341,8 +341,8 @@ void recordSingleMovement(){
   float angle2 = map(flexR2, STRAIGHT_RESISTANCE, BEND_RESISTANCE,0, 90.0);
   file.print(String(angle) + " ");
   file.println(String(angle2) + " ");
-  Serial.print("S1: " + String(angle));
-  Serial.println("S2: " + String(angle2));
+  Serial.print("S1: " + String(angle) + "\t");
+  Serial.print("S2: " + String(angle2)+ "\n");
    
   delay(100);
 }
