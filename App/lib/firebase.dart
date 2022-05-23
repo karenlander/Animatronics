@@ -1,5 +1,5 @@
 
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert' show utf8, base64;
 import 'package:firebase_database/firebase_database.dart';
 import 'dart:convert';
@@ -81,10 +81,36 @@ Future<int> getNumOfMoves() async{
   return data.value as int;
 }
 
+Future<String> getTotalAudioTime() async{
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference ref = database.ref().child('audioTime/audioTime');
+  DataSnapshot data = await ref.get();
+  return data.value as String;
+}
+
+void setTotalAudioTime(String audioTime) async{
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference ref = database.ref().child('audioTime');
+  ref.set( {"audioTime": audioTime});
+}
+
 void setNumOfMoves(int numOfMoves) async{
   FirebaseDatabase database = FirebaseDatabase.instance;
   DatabaseReference ref = database.ref().child('numOfMoves');
   ref.set( {"numOfMoves": numOfMoves});
+}
+
+void setMovesOnFirebase(int numOfMoves, var _moves){
+  var moves = {
+    "moves" : _moves
+  };
+  var reference = FirebaseFirestore.instance.collection("moves").doc("Cy2AIQT0ZNJRqELykUeq");
+  reference.set(moves);
+}
+
+Future<List<String>> getMovesOnFirebase() async{
+  var reference = FirebaseFirestore.instance.collection("moves").doc("Cy2AIQT0ZNJRqELykUeq");
+  return await reference.get().then((value) => value.data()!['moves'].cast<String>());
 }
 
 

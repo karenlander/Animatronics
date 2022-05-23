@@ -19,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
   bool loadingFirebase = true;
   int numOfMoves = 0;
   late List<String> _moves;
-
+  String totalDisplayTime = "";
   final recorder = SoundRecorder();
   final StopWatchTimer _stopWatchTimer = StopWatchTimer();
 
@@ -42,9 +42,16 @@ class _MainScreenState extends State<MainScreen> {
       loadingFirebase = true;
     });
     numOfMoves = await getNumOfMoves();
-    _moves =
-        List.generate(
-            numOfMoves, (index) => "Move ${(index + 1).toString()}");
+    String totalAudiTime = await getTotalAudioTime();
+    var parts = totalAudiTime.split(':');
+    _stopWatchTimer.setPresetHoursTime(int.parse(parts[0]));
+    _stopWatchTimer.setPresetMinuteTime(int.parse(parts[1]));
+    _stopWatchTimer.setPresetSecondTime(int.parse(parts[2]));
+    _moves = await getMovesOnFirebase();
+  //  _moves =
+    //    List.generate(
+      //      numOfMoves, (index) => "Move ${(index + 1).toString()}");
+
     setState(() {
       loadingFirebase = false;
     });
@@ -64,6 +71,7 @@ class _MainScreenState extends State<MainScreen> {
     } else {
       if(numOfMoves != _moves.length){
         _moves.add("Move ${(numOfMoves).toString()}");
+        setMovesOnFirebase(numOfMoves, _moves);
       }
       main = Column(
         children: [
@@ -80,31 +88,53 @@ class _MainScreenState extends State<MainScreen> {
                     color: primaryPink(),
                     elevation: 1,
                     margin: const EdgeInsets.all(10),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(25),
-                      title: Text(
-                        movesName,
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(
-                          Icons.mode_edit,
+                    child: Dismissible(
+                      direction: DismissDirection.endToStart,
+                      key: Key(movesName),
+                      background: Container(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: const Padding(
+                          padding: EdgeInsets.all(14.0),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
                         ),
-                        onPressed: () async {
-                          int parseMoveNumber = int.parse(_moves[index].split(' ')[1]);
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => EditMove(moveNumber: parseMoveNumber)));
-                        },
+                        color: darkOrange(),
                       ),
-                      leading: CircleAvatar(
-                        radius: 35,
-                        child: Icon(
-                          //TODO: image?
-                            Icons.visibility_rounded,
-                            color: lightPink()),
-                        backgroundColor: darkPink(),
+                      onDismissed: (DismissDirection direction)  {
+                        setState(() {
+                          _moves.removeAt(index);
+                          numOfMoves--;
+                        });
+                        setMovesOnFirebase(numOfMoves, _moves);
+                      },
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(25),
+                        title: Text(
+                          movesName,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(
+                            Icons.mode_edit,
+                          ),
+                          onPressed: () async {
+                            int parseMoveNumber = int.parse(_moves[index].split(' ')[1]);
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => EditMove(moveNumber: parseMoveNumber)));
+                          },
+                        ),
+                        leading: CircleAvatar(
+                          radius: 35,
+                          child: Icon(
+                            //TODO: image?
+                              Icons.visibility_rounded,
+                              color: lightPink()),
+                          backgroundColor: darkPink(),
+                        ),
+                        onTap: () {},
                       ),
-                      onTap: () {},
                     ),
                   );
                 },
@@ -116,6 +146,7 @@ class _MainScreenState extends State<MainScreen> {
                     }
                     final element = _moves.removeAt(oldIndex);
                     _moves.insert(newIndex, element);
+                    setMovesOnFirebase(numOfMoves, _moves);
                   });
                 }),
           ),
@@ -147,6 +178,30 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  Widget countdown(_stopWatchTimer, alignment) {
+    return Align(
+      alignment: alignment,
+      child: TextButton(
+          style: TextButton.styleFrom(
+            primary: darkOrange(),
+          ),
+          onPressed: () {},
+          child: StreamBuilder<int>(
+              stream: _stopWatchTimer.rawTime,
+              initialData: 0,
+              builder: (context, snapshot) {
+                final value = snapshot.data;
+                totalDisplayTime = StopWatchTimer.getDisplayTime(value!,
+                secondRightBreak: ":");
+                return Text(totalDisplayTime,
+                  style: TextStyle(
+                      color: darkOrange(), fontFamily: 'Poppins', fontSize: 15),
+                );
+              }
+          )),
+    );
+  }
+
   void playAndStop() async {
     final isRecording = await recorder.toggleRecording(numOfMoves + 1, false);
     setState(() {});
@@ -157,18 +212,19 @@ class _MainScreenState extends State<MainScreen> {
     }else{
       //we pressed stop
       getRequest("/stop/");
+      setTotalAudioTime(totalDisplayTime);
     }
   }
 
   Future<void> getRequest(String function) async {
     //TODO: change ip
-    String stringUrl = "http://192.168.43.115" + function;
+    String stringUrl = "http://192.168.43.209" + function;
     Uri url = Uri.parse(stringUrl);
     await http.get(url);
   }
 
 
-  void refresh() {
+  void refresh() async {
     _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
     setState(() {
       numOfMoves = numOfMoves + 1;

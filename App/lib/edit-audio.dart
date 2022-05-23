@@ -142,6 +142,30 @@ class _EditAudioState extends State<EditAudio> {
     );
   }
 
+  Widget countdown(_stopWatchTimer, alignment) {
+    return Align(
+      alignment: alignment,
+      child: TextButton(
+          style: TextButton.styleFrom(
+            primary: darkOrange(),
+          ),
+          onPressed: () {},
+          child: StreamBuilder<int>(
+              stream: _stopWatchTimer.rawTime,
+              initialData: 0,
+              builder: (context, snapshot) {
+                final value = snapshot.data;
+                final displayTime = StopWatchTimer.getDisplayTime(value!);
+                return Text(displayTime,
+                  style: TextStyle(
+                      color: darkOrange(), fontFamily: 'Poppins', fontSize: 15),
+                );
+              }
+          )),
+    );
+  }
+
+
   void playAndStop() async {
     final isRecording = await recorder.toggleRecording(widget.moveNumber, true);
     setState(() {});
