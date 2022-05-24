@@ -52,7 +52,6 @@ String cutEnter(String original){
 }
 
 void writeFile(String path, String data) async {
-  //TODO: how to write this file
   FirebaseDatabase database = FirebaseDatabase.instance;
   DatabaseReference ref = database.ref().child(path);
   var bytes = utf8.encode(data);

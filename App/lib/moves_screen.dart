@@ -1,5 +1,6 @@
-
 import 'package:animatronics/utils.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'edit_move_screen.dart';
@@ -22,6 +23,9 @@ class _MainScreenState extends State<MainScreen> {
   String totalDisplayTime = "";
   final recorder = SoundRecorder();
   final StopWatchTimer _stopWatchTimer = StopWatchTimer();
+  var audioPlayer = AudioPlayer();
+  bool isPlaying = false;
+  int currentAudioIndex = 1;
 
   void initState() {
     super.initState();
@@ -35,6 +39,7 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
     recorder.dispose();
     _stopWatchTimer.dispose();
+    audioPlayer.dispose();
   }
 
   void loadMoves() async {
@@ -154,7 +159,7 @@ class _MainScreenState extends State<MainScreen> {
       );
     }
     return Scaffold(
-      floatingActionButton: FabWidget(),
+      floatingActionButton: fab(),
       backgroundColor: lightPink(),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70.0),
@@ -176,6 +181,58 @@ class _MainScreenState extends State<MainScreen> {
       ),
       body: main,
     );
+  }
+
+  Widget fab() {
+    return FloatingActionButton(
+        child: Icon(isPlaying ? Icons.stop : Icons.send),
+        backgroundColor: primaryOrange(),
+        onPressed: () async {
+          if (isPlaying) {
+            setState(() {
+              isPlaying = false;
+            });
+            await audioPlayer.stop();
+          } else {
+            if(_moves.isNotEmpty){
+              currentAudioIndex = 1;
+              setState(() {
+                isPlaying = true;
+              });
+              await playAllAudio();
+            }
+          }
+        });
+  }
+
+  Future<void> setUrl(int moveNumber, storage) async {
+    String fileName = "move" + moveNumber.toString() + '.aac';
+    Reference ref = storage.ref().child(fileName);
+    String url = await ref.getDownloadURL();
+    audioPlayer.setUrl(url);
+    await audioPlayer.resume();
+  }
+
+  Future<void> playAllAudio() async
+  {
+    audioPlayer = AudioPlayer();
+    audioPlayer.setReleaseMode(ReleaseMode.STOP);
+
+    FirebaseStorage storage = FirebaseStorage.instance;
+    await setUrl(currentAudioIndex, storage);
+
+    audioPlayer.onPlayerCompletion.listen((event) async {
+      if(currentAudioIndex < _moves.length){
+        currentAudioIndex++;
+        await setUrl(currentAudioIndex, storage);
+      }else{
+        isPlaying = false;
+        setState(() {
+        });
+      }
+    });
+
+    await audioPlayer.resume();
   }
 
   Widget countdown(_stopWatchTimer, alignment) {
@@ -234,23 +291,7 @@ class _MainScreenState extends State<MainScreen> {
 
 }
 
-class FabWidget extends StatefulWidget {
-  const FabWidget({Key? key}) : super(key: key);
 
-  @override
-  _FabWidgetState createState() => _FabWidgetState();
-}
-
-class _FabWidgetState extends State<FabWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton(
-        child: Icon(Icons.send),
-        backgroundColor: primaryOrange(),
-        onPressed: () {});
-  }
-
-}
 
 
 
