@@ -50,6 +50,9 @@ const float R_DIV = 40000.0; // Measured resistance of 3.3k resistor
 const float STRAIGHT_RESISTANCE = 37300.0; // resistance when straight
 const float BEND_RESISTANCE = 90000.0; // resistance at 90 deg
 
+int prevAng = 0;
+bool isFirstAng = true;
+
 FirebaseData fbdo; // Firebase Data object
 
 FirebaseAuth auth;
@@ -245,6 +248,7 @@ void sendFile(){
 
     if(!numOfMoves){
        Serial.printf("Failed getting numOfMoves from FireBase: %s",fbdo.errorReason().c_str());
+       
     }   
     Serial.printf("Set %s... %s\n",numOfMovesPath, Firebase.setInt(fbdo, F(numOfMovesPath), ++numOfMoves) ? "ok" : fbdo.errorReason().c_str());
     sprintf(filePath, "%s%d%s", filePath1,numOfMoves,filePath2);
@@ -341,10 +345,20 @@ void recordSingleMovement(){
   // bend angle:
   float angle = map(flexR, STRAIGHT_RESISTANCE, BEND_RESISTANCE,0, 90.0);
   float angle2 = map(flexR2, STRAIGHT_RESISTANCE, BEND_RESISTANCE,0, 90.0);
-  file.print(String(angle) + " ");
+  if(isFirstAng){
+    isFirstAng = false;
+    prevAng = angle;  
+  }
+  if((prevAng > angle) && (prevAng - angle > 5 )){
+    prevAng = prevAng-5;
+  }
+  if((prevAng < angle) && (angle - prevAng > 5 )){
+    prevAng = prevAng+5;
+  }
+  file.print(String(prevAng) + " ");
   file.println(String(angle2));
-  Serial.print("S1: " + String(angle) + "\t");
+  Serial.print("S1: " + String(prevAng) + "\t");
   Serial.print("S2: " + String(angle2)+ "\n");
    
-  delay(100);
+  delay(25);
 }
