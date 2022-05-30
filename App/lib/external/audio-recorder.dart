@@ -56,7 +56,7 @@ class SoundRecorder{
     final File file = File(url!);
     await ref.putFile(File(file.path));
     if(!updating){
-      setNumOfMoves(nextMove);
+      setMaxMove(nextMove);
     }
   }
 

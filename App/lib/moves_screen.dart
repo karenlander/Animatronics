@@ -18,7 +18,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   bool loadingFirebase = true;
-  int numOfMoves = 0;
+  int indexMaxMove = 0;
   late List<String> _moves;
   String totalDisplayTime = "";
   final recorder = SoundRecorder();
@@ -46,17 +46,13 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       loadingFirebase = true;
     });
-    numOfMoves = await getNumOfMoves();
+    indexMaxMove = await getMaxMove();
     String totalAudiTime = await getTotalAudioTime();
     var parts = totalAudiTime.split(':');
     _stopWatchTimer.setPresetHoursTime(int.parse(parts[0]));
     _stopWatchTimer.setPresetMinuteTime(int.parse(parts[1]));
     _stopWatchTimer.setPresetSecondTime(int.parse(parts[2]));
     _moves = await getMovesOnFirebase();
-  //  _moves =
-    //    List.generate(
-      //      numOfMoves, (index) => "Move ${(index + 1).toString()}");
-
     setState(() {
       loadingFirebase = false;
     });
@@ -74,10 +70,6 @@ class _MainScreenState extends State<MainScreen> {
         child: CircularProgressIndicator(color: darkOrange()),
       );
     } else {
-      if(numOfMoves != _moves.length){
-        _moves.add("Move ${(numOfMoves).toString()}");
-        setMovesOnFirebase(numOfMoves, _moves);
-      }
       main = Column(
         children: [
           countdown(_stopWatchTimer, Alignment.centerRight),
@@ -110,9 +102,12 @@ class _MainScreenState extends State<MainScreen> {
                       onDismissed: (DismissDirection direction)  {
                         setState(() {
                           _moves.removeAt(index);
-                          numOfMoves--;
                         });
-                        setMovesOnFirebase(numOfMoves, _moves);
+                        setMovesOnFirebase(_moves);
+                        if(_moves.length == 0){
+                          setMaxMove(0);
+                          indexMaxMove = 0;
+                        }
                       },
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(25),
@@ -151,7 +146,7 @@ class _MainScreenState extends State<MainScreen> {
                     }
                     final element = _moves.removeAt(oldIndex);
                     _moves.insert(newIndex, element);
-                    setMovesOnFirebase(numOfMoves, _moves);
+                    setMovesOnFirebase(_moves);
                   });
                 }),
           ),
@@ -192,10 +187,12 @@ class _MainScreenState extends State<MainScreen> {
             setState(() {
               isPlaying = false;
             });
+            //TODO: send http get to stop moving the puppet
             await audioPlayer.stop();
           } else {
             if(_moves.isNotEmpty){
               currentAudioIndex = 1;
+              //TODO: send http get to start moving the puppet
               setState(() {
                 isPlaying = true;
               });
@@ -260,7 +257,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void playAndStop() async {
-    final isRecording = await recorder.toggleRecording(numOfMoves + 1, false);
+    final isRecording = await recorder.toggleRecording(indexMaxMove + 1, false);
     setState(() {});
     if(recorder.isRecording){
       //we pressed record
@@ -284,8 +281,10 @@ class _MainScreenState extends State<MainScreen> {
   void refresh() async {
     _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
     setState(() {
-      numOfMoves = numOfMoves + 1;
+      indexMaxMove = indexMaxMove + 1;
+      _moves.add("Move ${(indexMaxMove).toString()}");
     });
+    setMovesOnFirebase(_moves);
   }
 
 

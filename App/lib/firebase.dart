@@ -73,9 +73,9 @@ Future<String> readFileWithoutParse(String path) async {
   return utf8.decode(base64.decode(fileContent));
 }
 
-Future<int> getNumOfMoves() async{
+Future<int> getMaxMove() async{
   FirebaseDatabase database = FirebaseDatabase.instance;
-  DatabaseReference ref = database.ref().child('numOfMoves/numOfMoves');
+  DatabaseReference ref = database.ref().child('numOfMoves/maxMove');
   DataSnapshot data = await ref.get();
   return data.value as int;
 }
@@ -93,13 +93,14 @@ void setTotalAudioTime(String audioTime) async{
   ref.set( {"audioTime": audioTime});
 }
 
-void setNumOfMoves(int numOfMoves) async{
+void setMaxMove(int maxMove) async{
   FirebaseDatabase database = FirebaseDatabase.instance;
   DatabaseReference ref = database.ref().child('numOfMoves');
-  ref.set( {"numOfMoves": numOfMoves});
+  ref.set( {"maxMove": maxMove});
 }
 
-void setMovesOnFirebase(int numOfMoves, var _moves){
+
+void setMovesOnFirebase(var _moves){
   var moves = {
     "moves" : _moves
   };
