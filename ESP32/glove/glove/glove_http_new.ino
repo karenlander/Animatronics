@@ -355,8 +355,8 @@ void recordSingleMovement(){
   if((prevAng < angle) && (angle - prevAng > 5 )){
     prevAng = prevAng+5;
   }
-  file.print(String(prevAng) + " ");
-  file.println(String(angle2));
+  file.print(String(prevAng) + ",");
+  file.println(String(angle2)  + ",");
   Serial.print("S1: " + String(prevAng) + "\t");
   Serial.print("S2: " + String(angle2)+ "\n");
    
