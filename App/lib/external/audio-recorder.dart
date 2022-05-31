@@ -55,9 +55,6 @@ class SoundRecorder{
     Reference ref = storage.ref().child(Filename);
     final File file = File(url!);
     await ref.putFile(File(file.path));
-    if(!updating){
-      setMaxMove(nextMove);
-    }
   }
 
   Future toggleRecording(int nextMove, bool updating) async{

@@ -48,8 +48,8 @@ class _EditSensorState extends State<EditSensor> {
               padding: const EdgeInsets.only(top: 20.0),
               child: SpinBox(
                 //TODO: change to angles limits
-                min: -100,
-                max: 100,
+                min: -400,
+                max: 400,
                 value: anglePressed,
                 onChanged: (value) {
                   double time = data[angleIndexPressed].second;
@@ -82,31 +82,27 @@ class _EditSensorState extends State<EditSensor> {
   }
 
   Future<void> updateFileInFirebase() async{
-    String path = "glove/move" + widget.moveNumber.toString() + "/data";
+    String path = "Glove/RecordedMoves/Move" + widget.moveNumber.toString() + "/data";
     String content = await readFileWithoutParse(path);
-    var parts = content.split(' ');
+    var parts = content.split(',');
     parts.removeLast();
 
-    //TODO: change to 3
-    int col = 2;
-    //TODO: change to 3
-    int row = (parts.length / 2).round() ;
+    int col = 3;
+    int row = (parts.length / 3).round() ;
     var matrix = List.generate(row, (i) => List.filled(col, "", growable: false), growable: false);
 
     int j = 0;
-    //TODO: change to 3
-    for(int i = 0 ; i< parts.length; i+=2){
+    for(int i = 0 ; i< parts.length; i+=3){
       matrix[j][0] = parts[i];
       matrix[j][1] = parts[i+1];
-      //TODO: uncomment
-     // matrix[j][2] = parts[i+2];
+      matrix[j][2] = parts[i+2];
       j++;
     }
     if(widget.sensorNumber == 1){
       if(angleIndexPressed == 0){
         matrix[angleIndexPressed][0] = newAngle.toString();
       }else{
-        matrix[angleIndexPressed][0] = "\n" +newAngle.toString();
+        matrix[angleIndexPressed][0] = "\r\n" +newAngle.toString();
       }
 
     }else if(widget.sensorNumber == 2){
@@ -118,14 +114,16 @@ class _EditSensorState extends State<EditSensor> {
     String newContent = "";
     for(int i = 0; i< row; i ++){
       for(int j = 0; j< col; j++){
-        if(j == 1){
-          newContent += " " + matrix[i][j] + " ";
-        }else{
+        if(j == 0) {
           newContent += matrix[i][j];
+        }else if(j==1){
+          newContent += "," + matrix[i][j] + ",";
+        }else{
+          newContent += matrix[i][j] + ",";
         }
       }
     }
-    path = "glove/move" + widget.moveNumber.toString();
+    path = "Glove/RecordedMoves/Move" + widget.moveNumber.toString();
     writeFile(path, newContent);
   }
 

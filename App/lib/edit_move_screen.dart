@@ -23,7 +23,7 @@ class _EditMoveState extends State<EditMove> {
   }
 
   void parseFileOfMove() async {
-    String path = "glove/move" + widget.moveNumber.toString() + "/data";
+    String path = "Glove/RecordedMoves/Move" + widget.moveNumber.toString() + "/data";
     sensorsData = await readFile (path);
     setState(() {
       loadingFirebase = false;

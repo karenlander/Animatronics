@@ -104,10 +104,10 @@ class _MainScreenState extends State<MainScreen> {
                           _moves.removeAt(index);
                         });
                         setMovesOnFirebase(_moves);
-                        if(_moves.length == 0){
-                          setMaxMove(0);
-                          indexMaxMove = 0;
-                        }
+                        // if(_moves.length == 0){
+                        //   setMaxMove(0);
+                        //   indexMaxMove = 0;
+                        // }
                       },
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(25),
@@ -192,7 +192,7 @@ class _MainScreenState extends State<MainScreen> {
           } else {
             if(_moves.isNotEmpty){
               currentAudioIndex = 1;
-              //TODO: send http get to start moving the puppet
+              postRequest("/play/");
               setState(() {
                 isPlaying = true;
               });
@@ -277,6 +277,16 @@ class _MainScreenState extends State<MainScreen> {
     await http.get(url);
   }
 
+  Future<void> postRequest(String function) async {
+    //TODO: change ip
+    String stringUrl = "http://192.168.43.209" + function;
+    List<int> movesInt =  <int> [];
+    for(int i = 0 ; i< _moves.length; i++){
+      //movesInt [i] = _moves[i].split(' ')[1];
+    }
+    Uri url = Uri.parse(stringUrl);
+    await http.post(url, body: {'moves': movesInt});
+  }
 
   void refresh() async {
     _stopWatchTimer.onExecute.add(StopWatchExecute.stop);

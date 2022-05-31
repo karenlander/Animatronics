@@ -10,10 +10,6 @@ Future<List<List<String>>> readFile(String path) async {
   DataSnapshot data = await ref.get();
   String fileWithHeader = data.value as String;
   String fileContent = fileWithHeader.split(',').last;
-  // if (fileContent.length % 4 > 0) {
-  //   fileContent += '=' * (4 - fileContent.length % 4) ;// as suggested by Albert221
-  // }
-
   return parseData(utf8.decode(base64.decode(fileContent)));
 }
 
@@ -22,7 +18,7 @@ List<List<String>> parseData(String content){
   List<String> s2Data =  <String> [];
   List<String> s3Data =  <String> [];
   List<List<String>> sensorsData = [];
-  var parts = content.split(' ');
+  var parts = content.split(',');
   parts.removeLast();
   int sensor = 0 ;
   for(int i= 0; i< parts.length ; i++){
@@ -33,8 +29,7 @@ List<List<String>> parseData(String content){
       }else{
         s3Data.add(parts[i]);
       }
-      //TODO; change for sensor 3
-      sensor = (sensor + 1) % 2;
+      sensor = (sensor + 1) % 3;
   }
   sensorsData.add(s1Data);
   sensorsData.add(s2Data);
@@ -44,7 +39,7 @@ List<List<String>> parseData(String content){
 
 String cutEnter(String original){
   String toAdd = original;
-  if(original.startsWith('\n')){
+  if(original.startsWith('\r')){
     var pos = original.lastIndexOf('\n');
     toAdd = original.substring(pos + 1);
   }
@@ -75,7 +70,7 @@ Future<String> readFileWithoutParse(String path) async {
 
 Future<int> getMaxMove() async{
   FirebaseDatabase database = FirebaseDatabase.instance;
-  DatabaseReference ref = database.ref().child('numOfMoves/maxMove');
+  DatabaseReference ref = database.ref().child('Glove/RecordedMoves/numOfMoves');
   DataSnapshot data = await ref.get();
   return data.value as int;
 }
@@ -93,12 +88,11 @@ void setTotalAudioTime(String audioTime) async{
   ref.set( {"audioTime": audioTime});
 }
 
-void setMaxMove(int maxMove) async{
-  FirebaseDatabase database = FirebaseDatabase.instance;
-  DatabaseReference ref = database.ref().child('numOfMoves');
-  ref.set( {"maxMove": maxMove});
-}
-
+// void setMaxMove(int maxMove) async{
+//   FirebaseDatabase database = FirebaseDatabase.instance;
+//   DatabaseReference ref = database.ref().child('Glove/RecordedMoves');
+//   ref.set( {"numOfMoves": maxMove});
+// }
 
 void setMovesOnFirebase(var _moves){
   var moves = {
