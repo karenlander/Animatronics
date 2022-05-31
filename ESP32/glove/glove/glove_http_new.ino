@@ -356,9 +356,11 @@ void recordSingleMovement(){
     prevAng = prevAng+5;
   }
   file.print(String(prevAng) + ",");
+  file.print(String(prevAng) + ",");
   file.println(String(angle2)  + ",");
   Serial.print("S1: " + String(prevAng) + "\t");
-  Serial.print("S2: " + String(angle2)+ "\n");
+  Serial.print("S2: " + String(prevAng) + "\t");
+  Serial.print("S3: " + String(angle2)+ "\n");
    
   delay(25);
 }
