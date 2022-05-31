@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:animatronics/utils.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -280,12 +282,17 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> postRequest(String function) async {
     //TODO: change ip
     String stringUrl = "http://192.168.43.209" + function;
-    List<int> movesInt =  <int> [];
+    List<int> movesInt = [];
     for(int i = 0 ; i< _moves.length; i++){
-      //movesInt [i] = _moves[i].split(' ')[1];
+      String move = _moves[i].split(' ')[1];
+      movesInt.add(int.parse(move));
     }
     Uri url = Uri.parse(stringUrl);
-    await http.post(url, body: {'moves': movesInt});
+    Map<String, dynamic> args = {"moves": movesInt};
+    var body = json.encode(args);
+    final response = await http
+        .post(url, body: body, headers: {'Content-type': 'application/json'});
+   // await http.post(url, body: {'moves': movesInt});
   }
 
   void refresh() async {
