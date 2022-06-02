@@ -36,18 +36,7 @@ WebServer server(80);    // Create a webserver object that listens for HTTP requ
 
 // variables will change:
 
-
-FirebaseData fbdo; // Firebase Data object
-
-FirebaseAuth auth;
-FirebaseConfig config;
-
-
-bool taskCompleted = false;
-bool showHttpMsg = true;
-bool isPlay = false;
-bool isPaused = false;
-
+///puppet vars:
 const int servoCount = 3;// how many servo 
 const int sensorCount = 3;// how many sensors on glove
 static const int servosPins[servoCount] = {14,12,26}; // define pins here
@@ -55,10 +44,23 @@ Servo_ESP32 servos[servoCount];
 int servoDegrees[servoCount] = {0,0,0};
 int degShift[servoCount] = {90,0,0};
 
-//static const int servoPin1 = 14; //printed G14 on the board
-//Servo_ESP32 servo1;
 
+///firebase objects:
+FirebaseData fbdo; // Firebase Data object
+FirebaseAuth auth;
+FirebaseConfig config;
 fs::File file;
+
+///flags:
+bool taskCompleted = false;
+bool showHttpMsg = true;
+bool isPlay = false;
+bool isPaused = false;
+
+
+
+
+
 
 void connectToWifi() {
   Serial.print("connecting to WiFi");
@@ -173,18 +175,17 @@ void startHttpServer(){
   server.on("/stop/", HTTP_GET, stopFunction);
   server.on("/pause/", HTTP_GET, pauseFunction);
   server.begin();                           // Actually start the server
-  Serial.println("HTTP server started");  
+  Serial.println("Puppet HTTP server started");  
 }
 
 
 
 void setup() {
 
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.print("\n\n\n");
 
 
-  //servo1.attach(servoPin1);
   attachServos();
   
   connectToWifi();
