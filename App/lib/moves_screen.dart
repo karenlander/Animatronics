@@ -1,11 +1,11 @@
 import 'dart:convert';
-
 import 'package:animatronics/utils.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'edit_move_screen.dart';
+import 'expandable-fab.dart';
 import 'external/audio-recorder.dart';
 import 'firebase.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -28,6 +28,7 @@ class _MainScreenState extends State<MainScreen> {
   var audioPlayer = AudioPlayer();
   bool isPlaying = false;
   int currentAudioIndex = 1;
+  bool fromPause = false;
 
   void initState() {
     super.initState();
@@ -63,7 +64,8 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     bool isRecording = recorder.isRecording;
-    final icon = isRecording ? Icons.radio_button_checked : Icons.radio_button_unchecked;
+    final icon =
+        isRecording ? Icons.radio_button_checked : Icons.radio_button_unchecked;
 
     Widget main;
     if (loadingFirebase) {
@@ -101,7 +103,7 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                         color: darkOrange(),
                       ),
-                      onDismissed: (DismissDirection direction)  {
+                      onDismissed: (DismissDirection direction) {
                         setState(() {
                           _moves.removeAt(index);
                         });
@@ -122,15 +124,17 @@ class _MainScreenState extends State<MainScreen> {
                             Icons.mode_edit,
                           ),
                           onPressed: () async {
-                            int parseMoveNumber = int.parse(_moves[index].split(' ')[1]);
+                            int parseMoveNumber =
+                                int.parse(_moves[index].split(' ')[1]);
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => EditMove(moveNumber: parseMoveNumber)));
+                                builder: (context) =>
+                                    EditMove(moveNumber: parseMoveNumber)));
                           },
                         ),
                         leading: CircleAvatar(
                           radius: 35,
                           child: Icon(
-                            //TODO: image?
+                              //TODO: image?
                               Icons.visibility_rounded,
                               color: lightPink()),
                           backgroundColor: darkPink(),
@@ -156,7 +160,14 @@ class _MainScreenState extends State<MainScreen> {
       );
     }
     return Scaffold(
-      floatingActionButton: fab(),
+      floatingActionButton: ExpandableFab(
+        distance: 112.0,
+        children: [
+          stopFab(),
+          pauseFab(),
+          playFab(),
+        ],
+      ),
       backgroundColor: lightPink(),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70.0),
@@ -180,28 +191,50 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget fab() {
-    return FloatingActionButton(
-        child: Icon(isPlaying ? Icons.stop : Icons.send),
-        backgroundColor: primaryOrange(),
-        onPressed: () async {
-          if (isPlaying) {
-            setState(() {
-              isPlaying = false;
-            });
-            //TODO: send http get to stop moving the puppet
-            await audioPlayer.stop();
-          } else {
-            if(_moves.isNotEmpty){
+  Widget playFab() {
+    return ActionButton(
+      icon: const Icon(Icons.play_arrow, color: Colors.white),
+      onPressed: () async {
+        if (!isPlaying) {
+          if (_moves.isNotEmpty) {
+            postRequest("/play/");
+            isPlaying = true;
+            if(fromPause){
+              fromPause = false;
+              await audioPlayer.resume();
+            }else{
               currentAudioIndex = 1;
-              postRequest("/play/");
-              setState(() {
-                isPlaying = true;
-              });
               await playAllAudio();
             }
           }
-        });
+        }
+      },
+    );
+  }
+
+  Widget stopFab() {
+    return ActionButton(
+      icon: const Icon(Icons.stop, color: Colors.white),
+      onPressed: () async {
+          isPlaying = false;
+          postRequest("/stop/");
+          await audioPlayer.stop();
+      },
+    );
+  }
+
+  Widget pauseFab() {
+    return ActionButton(
+      icon: const Icon(Icons.pause, color: Colors.white),
+      onPressed: () async {
+        fromPause = true;
+        if (isPlaying) {
+          isPlaying = false;
+          postRequest("/pause/");
+          await audioPlayer.pause();
+        }
+      },
+    );
   }
 
   Future<void> setUrl(int moveNumber, storage) async {
@@ -212,8 +245,7 @@ class _MainScreenState extends State<MainScreen> {
     await audioPlayer.resume();
   }
 
-  Future<void> playAllAudio() async
-  {
+  Future<void> playAllAudio() async {
     audioPlayer = AudioPlayer();
     audioPlayer.setReleaseMode(ReleaseMode.STOP);
 
@@ -221,16 +253,13 @@ class _MainScreenState extends State<MainScreen> {
     await setUrl(currentAudioIndex, storage);
 
     audioPlayer.onPlayerCompletion.listen((event) async {
-      if(currentAudioIndex < _moves.length){
+      if (currentAudioIndex < _moves.length) {
         currentAudioIndex++;
         await setUrl(currentAudioIndex, storage);
-      }else{
+      } else {
         isPlaying = false;
-        setState(() {
-        });
       }
     });
-
     await audioPlayer.resume();
   }
 
@@ -248,24 +277,24 @@ class _MainScreenState extends State<MainScreen> {
               builder: (context, snapshot) {
                 final value = snapshot.data;
                 totalDisplayTime = StopWatchTimer.getDisplayTime(value!,
-                secondRightBreak: ":");
-                return Text(totalDisplayTime,
+                    secondRightBreak: ":");
+                return Text(
+                  totalDisplayTime,
                   style: TextStyle(
                       color: darkOrange(), fontFamily: 'Poppins', fontSize: 15),
                 );
-              }
-          )),
+              })),
     );
   }
 
   void playAndStop() async {
     final isRecording = await recorder.toggleRecording(indexMaxMove + 1, false);
     setState(() {});
-    if(recorder.isRecording){
+    if (recorder.isRecording) {
       //we pressed record
       _stopWatchTimer.onExecute.add(StopWatchExecute.start);
       getRequest("/record/");
-    }else{
+    } else {
       //we pressed stop
       getRequest("/stop/");
       setTotalAudioTime(totalDisplayTime);
@@ -283,7 +312,7 @@ class _MainScreenState extends State<MainScreen> {
     //TODO: change ip
     String stringUrl = "http://192.168.43.209" + function;
     List<int> movesInt = [];
-    for(int i = 0 ; i< _moves.length; i++){
+    for (int i = 0; i < _moves.length; i++) {
       String move = _moves[i].split(' ')[1];
       movesInt.add(int.parse(move));
     }
@@ -292,7 +321,7 @@ class _MainScreenState extends State<MainScreen> {
     var body = json.encode(args);
     final response = await http
         .post(url, body: body, headers: {'Content-type': 'application/json'});
-   // await http.post(url, body: {'moves': movesInt});
+    // await http.post(url, body: {'moves': movesInt});
   }
 
   void refresh() async {
@@ -303,16 +332,4 @@ class _MainScreenState extends State<MainScreen> {
     });
     setMovesOnFirebase(_moves);
   }
-
-
 }
-
-
-
-
-
-
-
-
-
-
