@@ -31,14 +31,19 @@ class _InformationState extends State<Information> {
           ),
         ),
       ),
-      body: Center(
-          child: RichText(
-              text: TextSpan(
-                  text: 'Bla bla bla',
-                  style: TextStyle(
-                      color: primaryOrange(),
-                      fontSize: 30,
-                      )))
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: RichText(
+            text: TextSpan(
+                text: 'An educational, open source, development kit that combines robotics and movement capture. \n\n'
+                    'The system is built upon three main components:\n\n'
+                    '• A Puppet which “plays” the recorded movements and sound.\n'
+                    '• A Glove which enables to “record” the wearers movements.\n'
+                    '• An App which supplies the user with a graphic interface to view and edit the recorded movements and sounds.',
+                style: TextStyle(
+                    color: primaryOrange(),
+                    fontSize: 20,
+                    ))),
       ),
     );
   }

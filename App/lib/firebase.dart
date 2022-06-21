@@ -88,6 +88,22 @@ void setTotalAudioTime(String audioTime) async{
   ref.set( {"audioTime": audioTime});
 }
 
+Future<String> getIp(String who) async{
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  String path = 'Ip' + who + '/Ip' + who;
+  DatabaseReference ref = database.ref().child('audioTime/audioTime');
+  DataSnapshot data = await ref.get();
+  return data.value as String;
+}
+
+void setIp(String ip, String who) async{
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference ref = database.ref().child('audioTime');
+  ref.set( {"audioTime": ip});
+}
+
+
+
 // void setMaxMove(int maxMove) async{
 //   FirebaseDatabase database = FirebaseDatabase.instance;
 //   DatabaseReference ref = database.ref().child('Glove/RecordedMoves');

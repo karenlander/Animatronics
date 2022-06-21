@@ -1,4 +1,5 @@
 import 'package:animatronics/firebase.dart';
+import 'package:animatronics/set_ip.dart';
 import 'package:animatronics/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin{
         elevation: 0,
         actions: [
           newIcon(Icons.info_outlined, 30, information, darkOrange()),
+          newIcon(Icons.settings, 30, setIp, darkOrange()),
         ],
       ),
       body: AnimatedBackground(
@@ -54,6 +56,10 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin{
 
   void information(){
     Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Information()));
+  }
+
+  void setIp(){
+    Navigator.of(context).push(MaterialPageRoute(builder: (context)=> SetIp()));
   }
 
   void start(){

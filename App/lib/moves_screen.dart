@@ -1,11 +1,7 @@
-import 'dart:convert';
 import 'package:animatronics/utils.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'edit_move_screen.dart';
-import 'expandable-fab.dart';
 import 'external/audio-recorder.dart';
 import 'firebase.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -25,10 +21,6 @@ class _MainScreenState extends State<MainScreen> {
   String totalDisplayTime = "";
   final recorder = SoundRecorder();
   final StopWatchTimer _stopWatchTimer = StopWatchTimer();
-  var audioPlayer = AudioPlayer();
-  bool isPlaying = false;
-  int currentAudioIndex = 1;
-  bool fromPause = false;
 
   void initState() {
     super.initState();
@@ -42,7 +34,6 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
     recorder.dispose();
     _stopWatchTimer.dispose();
-    audioPlayer.dispose();
   }
 
   void loadMoves() async {
@@ -121,14 +112,14 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                         trailing: IconButton(
                           icon: const Icon(
-                            Icons.mode_edit,
+                            Icons.open_in_full,
                           ),
                           onPressed: () async {
                             int parseMoveNumber =
                                 int.parse(_moves[index].split(' ')[1]);
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) =>
-                                    EditMove(moveNumber: parseMoveNumber)));
+                                    EditMove(moveNumber: parseMoveNumber, moves: _moves,)));
                           },
                         ),
                         leading: CircleAvatar(
@@ -160,14 +151,6 @@ class _MainScreenState extends State<MainScreen> {
       );
     }
     return Scaffold(
-      floatingActionButton: ExpandableFab(
-        distance: 112.0,
-        children: [
-          stopFab(),
-          pauseFab(),
-          playFab(),
-        ],
-      ),
       backgroundColor: lightPink(),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70.0),
@@ -189,78 +172,6 @@ class _MainScreenState extends State<MainScreen> {
       ),
       body: main,
     );
-  }
-
-  Widget playFab() {
-    return ActionButton(
-      icon: const Icon(Icons.play_arrow, color: Colors.white),
-      onPressed: () async {
-        if (!isPlaying) {
-          if (_moves.isNotEmpty) {
-            postRequest("/play/");
-            isPlaying = true;
-            if(fromPause){
-              fromPause = false;
-              await audioPlayer.resume();
-            }else{
-              currentAudioIndex = 1;
-              await playAllAudio();
-            }
-          }
-        }
-      },
-    );
-  }
-
-  Widget stopFab() {
-    return ActionButton(
-      icon: const Icon(Icons.stop, color: Colors.white),
-      onPressed: () async {
-          isPlaying = false;
-          postRequest("/stop/");
-          await audioPlayer.stop();
-      },
-    );
-  }
-
-  Widget pauseFab() {
-    return ActionButton(
-      icon: const Icon(Icons.pause, color: Colors.white),
-      onPressed: () async {
-        fromPause = true;
-        if (isPlaying) {
-          isPlaying = false;
-          postRequest("/pause/");
-          await audioPlayer.pause();
-        }
-      },
-    );
-  }
-
-  Future<void> setUrl(int moveNumber, storage) async {
-    String fileName = "move" + moveNumber.toString() + '.aac';
-    Reference ref = storage.ref().child(fileName);
-    String url = await ref.getDownloadURL();
-    audioPlayer.setUrl(url);
-    await audioPlayer.resume();
-  }
-
-  Future<void> playAllAudio() async {
-    audioPlayer = AudioPlayer();
-    audioPlayer.setReleaseMode(ReleaseMode.STOP);
-
-    FirebaseStorage storage = FirebaseStorage.instance;
-    await setUrl(currentAudioIndex, storage);
-
-    audioPlayer.onPlayerCompletion.listen((event) async {
-      if (currentAudioIndex < _moves.length) {
-        currentAudioIndex++;
-        await setUrl(currentAudioIndex, storage);
-      } else {
-        isPlaying = false;
-      }
-    });
-    await audioPlayer.resume();
   }
 
   Widget countdown(_stopWatchTimer, alignment) {
@@ -293,35 +204,18 @@ class _MainScreenState extends State<MainScreen> {
     if (recorder.isRecording) {
       //we pressed record
       _stopWatchTimer.onExecute.add(StopWatchExecute.start);
-      getRequest("/record/");
+      getRequest("/record/", "http://192.168.43.115");
     } else {
       //we pressed stop
-      getRequest("/stop/");
+      getRequest("/stop/", "http://192.168.43.115");
       setTotalAudioTime(totalDisplayTime);
     }
   }
 
-  Future<void> getRequest(String function) async {
-    //TODO: change ip
-    String stringUrl = "http://192.168.43.209" + function;
+  Future<void> getRequest(String function, String ip) async {
+    String stringUrl = ip + function;
     Uri url = Uri.parse(stringUrl);
     await http.get(url);
-  }
-
-  Future<void> postRequest(String function) async {
-    //TODO: change ip
-    String stringUrl = "http://192.168.43.209" + function;
-    List<int> movesInt = [];
-    for (int i = 0; i < _moves.length; i++) {
-      String move = _moves[i].split(' ')[1];
-      movesInt.add(int.parse(move));
-    }
-    Uri url = Uri.parse(stringUrl);
-    Map<String, dynamic> args = {"moves": movesInt};
-    var body = json.encode(args);
-    final response = await http
-        .post(url, body: body, headers: {'Content-type': 'application/json'});
-    // await http.post(url, body: {'moves': movesInt});
   }
 
   void refresh() async {
