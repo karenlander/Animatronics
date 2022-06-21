@@ -10,8 +10,8 @@ The system is built upon three main components:
 
 ## Table of Contents
 For documentation: 
+* Setup instructions - https://docs.google.com/document/d/1pbO62qTDf2acWt1vWaIYJnc0NCYORjIZMMoLGNaEi-E/edit?usp=sharing
 * Quick overview - https://docs.google.com/document/d/1v1cL1cx6icblVWjQy6BUs4tE5hV8HPODhJ6ZXVhGkuU/edit?usp=sharing
-* Setup instructions - 
-* Code description -
+* Code description - https://docs.google.com/document/d/1DK-c5NZRnGI5RaggiBan3vykoPD5mxevz1PdydJ1hoc/edit?usp=sharing
 
 
