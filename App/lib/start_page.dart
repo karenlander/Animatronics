@@ -33,21 +33,17 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin{
           newIcon(Icons.settings, 30, setIp, darkOrange()),
         ],
       ),
-      body: AnimatedBackground(
-        behaviour: RandomParticleBehaviour(options: ParticleOptions( baseColor:primaryPink())),
-        vsync: this,
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const SizedBox(height: 20),
-                Lottie.asset('lib/assets/doll.json',),
-                animatronicsTittle('Animatronics', primaryOrange(), 59),
-                const SizedBox(height: 140),
-                newButton("Start", start),
-              ],
-            ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const SizedBox(height: 20),
+              Lottie.asset('lib/assets/doll.json',),
+              animatronicsTittle('Animatronics', primaryOrange(), 59),
+              const SizedBox(height: 140),
+              newButton("Start", start),
+            ],
           ),
         ),
       ),
