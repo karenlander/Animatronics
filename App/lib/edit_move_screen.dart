@@ -104,14 +104,15 @@ class _EditMoveState extends State<EditMove> {
     return ActionButton(
       icon: const Icon(Icons.stop, color: Colors.white),
       onPressed: () async {
-        getRequest("/stop/", "http://192.168.43.70");
+        getRequest("/stop/");
         await audioPlayer.stop();
       },
     );
   }
 
-  Future<void> getRequest(String function, String ip) async {
-    String stringUrl = ip + function;
+  Future<void> getRequest(String function) async {
+    String ip = await getIp("Puppet");
+    String stringUrl = "http://" + ip + function;
     Uri url = Uri.parse(stringUrl);
     await http.get(url);
   }
@@ -121,7 +122,7 @@ class _EditMoveState extends State<EditMove> {
       icon: const Icon(Icons.pause, color: Colors.white),
       onPressed: () async {
         fromPause = true;
-        getRequest("/pause/", "http://192.168.43.70");
+        getRequest("/pause/");
         await audioPlayer.pause();
       },
     );
@@ -136,7 +137,8 @@ class _EditMoveState extends State<EditMove> {
   }
 
   Future<void> postRequest(String function) async {
-    String stringUrl = "http://192.168.225.70" + function;
+    String ip = await getIp("Puppet");
+    String stringUrl = "http://" + ip + function;
     Uri url = Uri.parse(stringUrl);
     Map<String, dynamic> args = {"move": widget.moveNumber};
     var body = json.encode(args);

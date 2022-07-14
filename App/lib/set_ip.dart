@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+import 'firebase.dart';
+
 class SetIp extends StatefulWidget {
   const SetIp({Key? key}) : super(key: key);
 
@@ -12,7 +14,7 @@ class SetIp extends StatefulWidget {
 
 class _SetIpState extends State<SetIp> {
   TextEditingController ipGloveController = TextEditingController();
-  TextEditingController ipPupperController = TextEditingController();
+  TextEditingController ipPuppetController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +75,8 @@ class _SetIpState extends State<SetIp> {
                     color: darkPink(),
                   ),
                   iconSize: 30,
-                  onPressed: () async {
-
+                  onPressed: ()  {
+                      setIp(ipGloveController.text, "Glove");
                   },
                 ),
               ],
@@ -108,7 +110,7 @@ class _SetIpState extends State<SetIp> {
                           ),
                         ),
                         cursorColor: darkOrange(),
-                        controller: ipGloveController,
+                        controller: ipPuppetController,
                       ),
                     )),
                 IconButton(
@@ -117,7 +119,7 @@ class _SetIpState extends State<SetIp> {
                   ),
                   iconSize: 30,
                   onPressed: () async {
-
+                    setIp(ipPuppetController.text, "Puppet");
                   },
                 ),
               ],

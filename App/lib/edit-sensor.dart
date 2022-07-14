@@ -61,7 +61,7 @@ class _EditSensorState extends State<EditSensor> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 110.0),
+              padding: const EdgeInsets.only(top: 10.0),
               child: Align(
                 alignment: Alignment.centerRight,
                 child: IconButton(

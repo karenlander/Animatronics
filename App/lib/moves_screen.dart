@@ -204,16 +204,17 @@ class _MainScreenState extends State<MainScreen> {
     if (recorder.isRecording) {
       //we pressed record
       _stopWatchTimer.onExecute.add(StopWatchExecute.start);
-      getRequest("/record/", "http://192.168.43.115");
+      getRequest("/record/");
     } else {
       //we pressed stop
-      getRequest("/stop/", "http://192.168.43.115");
+      getRequest("/stop/");
       setTotalAudioTime(totalDisplayTime);
     }
   }
 
-  Future<void> getRequest(String function, String ip) async {
-    String stringUrl = ip + function;
+  Future<void> getRequest(String function) async {
+    String ip = await getIp("Glove");
+    String stringUrl = "http://" + ip + function;
     Uri url = Uri.parse(stringUrl);
     await http.get(url);
   }
