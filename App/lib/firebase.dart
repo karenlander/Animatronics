@@ -103,13 +103,26 @@ void setIp(String ip, String who) async{
   ref.set( {path: ip});
 }
 
+Future<int> getDelay(String who, int moveNumber) async{
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  String path = "Glove/RecordedMoves/Move" + moveNumber.toString() + "/" + who + "Delay" +
+      "/" + who + "Delay";
+  DatabaseReference ref = database.ref().child(path);
+  DataSnapshot data = await ref.get();
+  if (data.value == null){
+    return 0;
+  }
+  return data.value as int;
+}
 
-
-// void setMaxMove(int maxMove) async{
-//   FirebaseDatabase database = FirebaseDatabase.instance;
-//   DatabaseReference ref = database.ref().child('Glove/RecordedMoves');
-//   ref.set( {"numOfMoves": maxMove});
-// }
+void setDelay(String delay, String who, int moveNumber) async{
+  int delayInt = int.parse(delay);
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  String path = "Glove/RecordedMoves/Move" + moveNumber.toString() + "/" + who + "Delay";
+  String field = who + "Delay";
+  DatabaseReference ref = database.ref().child(path);
+  ref.set( {field: delayInt});
+}
 
 void setMovesOnFirebase(var _moves){
   var moves = {

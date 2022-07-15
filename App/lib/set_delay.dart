@@ -1,25 +1,25 @@
 import 'package:animatronics/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
-
 import 'firebase.dart';
 
-SnackBar get PuppetIpSaved =>
-    const SnackBar(content: Text('Puppet ip updated'));
-SnackBar get GloveIpSaved =>
-    const SnackBar(content: Text('Glove ip updated'));
+SnackBar get SoundDelaySaved =>
+    const SnackBar(content: Text('Sound delay updated'));
+SnackBar get MoveDelaySaved =>
+    const SnackBar(content: Text('Move delay updated'));
 
-class SetIp extends StatefulWidget {
-  const SetIp({Key? key}) : super(key: key);
+
+class SetDelay extends StatefulWidget {
+  int moveNumber;
+  SetDelay({Key? key, required this.moveNumber}) : super(key: key);
 
   @override
-  State<SetIp> createState() => _SetIpState();
+  State<SetDelay> createState() => _SetDelayState();
 }
 
-class _SetIpState extends State<SetIp> {
-  TextEditingController ipGloveController = TextEditingController();
-  TextEditingController ipPuppetController = TextEditingController();
+class _SetDelayState extends State<SetDelay> {
+  TextEditingController delayMoveController = TextEditingController();
+  TextEditingController delaySoundController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class _SetIpState extends State<SetIp> {
             padding: const EdgeInsets.only(top: 40.0),
             child: Column(
               children: [
-                newText(27, Colors.white, "Set ip", false, true),
+                newText(27, Colors.white, "Set delay", false, true),
               ],
             ),
           ),
@@ -51,7 +51,7 @@ class _SetIpState extends State<SetIp> {
                 padding: const EdgeInsets.only(top:8),
                 child: RichText(
                     text: TextSpan(
-                        text: 'Enter the ip of the glove',
+                        text: 'Enter delay for the moves',
                         style: TextStyle(
                           color: primaryOrange(),
                           fontSize: 20,
@@ -73,8 +73,8 @@ class _SetIpState extends State<SetIp> {
                             borderSide: BorderSide(color: darkOrange()),
                           ),
                         ),
-                  controller: ipGloveController,
-                ),
+                        controller: delayMoveController,
+                      ),
                     )),
                 IconButton(
                   icon: Icon(Icons.save,
@@ -82,9 +82,9 @@ class _SetIpState extends State<SetIp> {
                   ),
                   iconSize: 30,
                   onPressed: ()  {
-                      setIp(ipGloveController.text, "Glove");
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(GloveIpSaved);
+                    setDelay(delayMoveController.text, "Move", widget.moveNumber);
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(MoveDelaySaved);
                   },
                 ),
               ],
@@ -96,7 +96,7 @@ class _SetIpState extends State<SetIp> {
                 padding: const EdgeInsets.only(top:8),
                 child: RichText(
                     text: TextSpan(
-                        text: 'Enter the ip of the puppet',
+                        text: 'Enter delay for the sound',
                         style: TextStyle(
                           color: primaryOrange(),
                           fontSize: 20,
@@ -118,7 +118,7 @@ class _SetIpState extends State<SetIp> {
                           ),
                         ),
                         cursorColor: darkOrange(),
-                        controller: ipPuppetController,
+                        controller: delaySoundController,
                       ),
                     )),
                 IconButton(
@@ -127,9 +127,9 @@ class _SetIpState extends State<SetIp> {
                   ),
                   iconSize: 30,
                   onPressed: () async {
-                    setIp(ipPuppetController.text, "Puppet");
+                    setDelay(delaySoundController.text, "Sound", widget.moveNumber);
                     ScaffoldMessenger.of(context)
-                        .showSnackBar(PuppetIpSaved);
+                        .showSnackBar(SoundDelaySaved);
                   },
                 ),
               ],

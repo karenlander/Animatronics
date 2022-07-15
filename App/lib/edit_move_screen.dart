@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:animatronics/set_delay.dart';
 import 'package:http/http.dart' as http;
 import 'package:animatronics/utils.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -69,6 +71,9 @@ class _EditMoveState extends State<EditMove> {
           child: AppBar(
             backgroundColor: primaryOrange(),
             elevation: 0,
+            actions: [
+              newIcon(Icons.settings, 30, openDelayWindow,lightPink() )
+            ],
             flexibleSpace: Padding(
               padding: const EdgeInsets.only(top: 30.0),
               child: Column(
@@ -129,6 +134,8 @@ class _EditMoveState extends State<EditMove> {
   }
 
   Future<void> playAudio() async {
+    int delaySound = await getDelay("Sound", widget.moveNumber);
+    sleep(Duration(seconds:delaySound));
     audioPlayer = AudioPlayer();
     audioPlayer.setReleaseMode(ReleaseMode.STOP);
     FirebaseStorage storage = FirebaseStorage.instance;
@@ -198,6 +205,12 @@ class _EditMoveState extends State<EditMove> {
     String url = await ref.getDownloadURL();
     audioPlayer.setUrl(url);
     await audioPlayer.resume();
+  }
+
+  void openDelayWindow(){
+    Navigator.of(context).push(MaterialPageRoute(builder: (context)=> SetDelay(
+        moveNumber: widget.moveNumber
+    )));
   }
 }
 
