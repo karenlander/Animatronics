@@ -44,6 +44,10 @@ static const int servosPins[servoCount] = {14, 12, 26}; // define pins here
 Servo_ESP32 servos[servoCount];
 int servoDegrees[servoCount] = {0, 90, 90};
 int degShift[servoCount] = {0, 0, 0};
+unsigned long httpGetTime = 0;
+unsigned long playDelay = 0;
+
+
 
 ///Puppet consts:
 const int MOUTH_OPEN = 40;
@@ -67,6 +71,7 @@ bool taskCompleted = false;
 bool showHttpMsg = true;
 bool isPlay = false;
 bool isPaused = false;
+bool isFirstMove = true;
 
 
 
@@ -228,7 +233,11 @@ void getFile_FB(char * fileNumber) {
 
     const char* filePath1 = "Glove/RecordedMoves/Move";
     const char* filePath2 = "/data";
+    const char* delayPath2 = "/MoveDelay/MoveDelay";
+
     char filePath[40];
+    char delayPath[100];
+
     
 
 
@@ -238,7 +247,7 @@ void getFile_FB(char * fileNumber) {
 
           int numOfMoves = (Firebase.getInt(fbdo, F(numOfMovesPath))) ? fbdo.to<int>() : 0;
           Serial.println("numOfMoves = " + String(numOfMoves));
-      
+          
           if (!numOfMoves) {
             Serial.printf("Failed getting numOfMoves from FireBase: %s", fbdo.errorReason().c_str());
           }
@@ -251,6 +260,12 @@ void getFile_FB(char * fileNumber) {
     // File name must be in 8.3 DOS format (max. 8 bytes file name and 3 bytes file extension)
 
     Serial.println("\nGet file...");
+
+    sprintf(delayPath, "%s%c%s", filePath1, fileNumber[0], delayPath2);
+    playDelay = (Firebase.getInt(fbdo, F(delayPath))) ? fbdo.to<int>() : 0;
+    Serial.print("-----------------------------------------------------------delay:");
+    Serial.println(playDelay);
+
     if (!Firebase.getFile(fbdo, StorageType::FLASH, filePath, "/file2.txt", rtdbDownloadCallback /* callback function*/))
       Serial.println(fbdo.errorReason());
 
@@ -381,13 +396,12 @@ void playLastFunction() {
 }
 
 void playNumberedFunction() {
-
+  
   Serial.println("Entering playLastFunction");
   String movesArg = server.arg(0); 
-  String parsed = movesArg.substring(movesArg.indexOf('[')+1,movesArg.indexOf(']'));
+  String parsed = movesArg.substring(movesArg.indexOf(':')+1,movesArg.indexOf('}'));
   char moveNumber[2];
   parsed.toCharArray(moveNumber,2);
-  char * movesNumbers = strtok(moveNumber, ",");
 
   if (!DEFAULT_FLASH_FS.begin(true)) {
     Serial.println("SPIFFS/LittleFS initialization failed.");
@@ -395,7 +409,7 @@ void playNumberedFunction() {
     return;
   }
   if (isPaused == false) {
-    getFile_FB(movesNumbers);
+    getFile_FB(moveNumber);
     file = DEFAULT_FLASH_FS.open("/file2.txt", "r");
   }
 
@@ -432,13 +446,27 @@ void playSingleMovement() {
     Serial.println("reached eof");
     Serial.println();
     file.close();
+    resetPuppet();//////////
     isPlay = false;
     showHttpMsg = true;
     return;
   }
 
 
+  if(isFirstMove){
+    isFirstMove = false;
+    Serial.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 
+    Serial.println(playDelay);
+
+    Serial.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+
+    delay(playDelay);
+
+    Serial.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+
+    
+  }
   Serial.print("angles: ");
   for (int i = 0; i < servoCount; i++) {
     servoDegrees[i] = degStr[i].toInt() + degShift[i];
@@ -469,6 +497,7 @@ void stopFunction() {
     return;
   }
   isPlay = false;
+  isFirstMove = true;
   showHttpMsg = true;
   Serial.println("file closed");
   file.close();
