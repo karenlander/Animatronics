@@ -449,24 +449,17 @@ void playSingleMovement() {
     resetPuppet();//////////
     isPlay = false;
     showHttpMsg = true;
+    isFirstMove = true;
     return;
   }
 
 
   if(isFirstMove){
     isFirstMove = false;
-    Serial.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-
     Serial.println(playDelay);
-
-    Serial.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-
     delay(playDelay);
-
-    Serial.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-
-    
   }
+  
   Serial.print("angles: ");
   for (int i = 0; i < servoCount; i++) {
     servoDegrees[i] = degStr[i].toInt() + degShift[i];
