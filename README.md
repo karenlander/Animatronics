@@ -27,5 +27,5 @@ Hadi Khier
 Karen Lander
 ```
 as part of 236333 - Project in The Internet of Things, 
-in collaboration with ICST Technion
+in collaboration with ICST Technion,
 2022
