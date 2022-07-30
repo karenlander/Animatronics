@@ -16,12 +16,16 @@ For documentation:
 
 * Code description - https://docs.google.com/document/d/1l5dV2Bsh1rgfIEc2_v69OPxRuIqOU1MTEW3pjF1Ghow/edit?usp=sharing
 
-## Project Google Drive Documents
+## Project Documents on Google Drive
 https://drive.google.com/drive/folders/1xyT7vNfeH08o0_IfiJV_9VP3BE16CaBb
 
 ## creators
 this project in its entirety was made by:
 ```
 Yair Sa-Nes
-Hade 
+Hadi Khier
+Karen Lander
 ```
+as part of 236333 - Project in The Internet of Things, 
+in collaboration with ICST Technion
+2022
