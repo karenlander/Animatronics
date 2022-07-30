@@ -29,3 +29,6 @@ Karen Lander
 as part of 236333 - Project in The Internet of Things, 
 in collaboration with ICST Technion,
 2022
+
+![image](https://user-images.githubusercontent.com/75473022/182001815-9d6f1a07-67a6-4a49-8560-68b5980168bb.png)
+
