@@ -26,7 +26,9 @@ Yair Sa-Nes
 Hadi Khier
 Karen Lander
 ```
-as part of 236333 - Project in The Internet of Things,
+as part of 236333 - Project in The Internet of Things, Technion
+
+Center of CS Department's Software Engineering Track,
 
 in collaboration with ICST Technion,
 
